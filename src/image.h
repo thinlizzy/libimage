@@ -4,6 +4,7 @@
 #include <memory>
 #include <istream>
 #include <ostream>
+#include <string>
 
 struct FIBITMAP;
 
@@ -29,6 +30,7 @@ public:
 	Image(Image &&) = default;
 	//Image & operator=(Image &&) = default;
 	explicit Image(char const * filename);
+	explicit Image(std::string const & filename);
 	Image(std::istream & stream, Type type);
 	// ~Image();
 	void load(char const * filename);

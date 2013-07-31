@@ -13,6 +13,11 @@ Image::Image(char const * filename)
 	load(filename);
 }
 
+Image::Image(std::string const & filename)
+{
+	load(filename.c_str());
+}
+
 Image::Image(std::istream & stream, Type type)
 {
 	load(stream,type);
