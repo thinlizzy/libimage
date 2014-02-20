@@ -12,6 +12,10 @@ namespace img {
 
 typedef unsigned Size;
 
+struct Color {
+    unsigned char r,g,b,a;
+};
+
 enum Type { BMP, GIF, JPG, PNG, };
 
 class Image {
@@ -40,6 +44,13 @@ public:
 	Size height() const;
 	unsigned bpp() const;
 	unsigned char * rawBits() const;
+    
+    //slow pixel access functions. use with care
+    int getColorIndex(Size x, Size y) const;
+    Color getColor(Size x, Size y) const;
+    
+    bool transparent() const;
+    int getTransparentColorIndex() const;
 
 	void * getWindowSystemHeader() const;
 

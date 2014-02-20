@@ -86,6 +86,32 @@ void * Image::getWindowSystemHeader() const
 	return FreeImage_GetInfo(image.get());
 }
 
+bool Image::transparent() const
+{
+    return FreeImage_IsTransparent(image.get());
+}
+
+int Image::getTransparentColorIndex() const
+{
+    return FreeImage_GetTransparentIndex(image.get());
+}
+
+int Image::getColorIndex(Size x, Size y) const
+{
+    BYTE result;
+    // todo log if false
+    FreeImage_GetPixelIndex(image.get(),x,y,&result);
+    return result;
+}
+
+Color Image::getColor(Size x, Size y) const
+{
+    RGBQUAD value;
+    // todo log if false
+    FreeImage_GetPixelColor(image.get(),x,y,&value);
+    Color result = {value.rgbRed,value.rgbGreen,value.rgbBlue,value.rgbReserved};
+    return result;
+}
 
 Image Image::thumbnail(Size squareSize) const
 {
