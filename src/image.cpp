@@ -53,12 +53,43 @@ void Image::load(char const * filename)
 
 	// ok, let's load the file
 	FIBITMAP * dib = FreeImage_Load(fif, filename, 0);		// flag = 0 for now. need to customize it in some way
-	if( dib == 0 ) throw std::runtime_error("error loading image");
+	if( dib == 0 ) throw std::runtime_error("error loading image " + std::string(filename));
 
 	// unless a bad file format, we are done !
 	image.reset(dib);
 	type = fif;
 }
+
+Image Image::clone() const
+{
+    FIBITMAP * cloneDib = FreeImage_Clone(image.get());
+	if( cloneDib == 0 ) throw std::runtime_error("error cloning image");
+    
+	return Image(cloneDib,type);
+}
+
+Image Image::rotate(double degrees) const
+{
+    FIBITMAP * cloneDib = FreeImage_Rotate(image.get(),degrees);
+	if( cloneDib == 0 ) throw std::runtime_error("error rotating image");
+    
+	return Image(cloneDib,type);
+}
+
+Image Image::flipH() const
+{
+    auto result = clone();
+    FreeImage_FlipHorizontal(result.image.get());
+    return result;
+}
+
+Image Image::flipV() const
+{
+    auto result = clone();
+    FreeImage_FlipVertical(result.image.get());
+    return result;
+}
+
 
 Size Image::width() const
 {
@@ -145,7 +176,7 @@ unsigned DLL_CALLCONV ReadProc(void * buffer, unsigned size, unsigned count, fi_
 	unsigned result = 0;
 	while( result < count ) {
 		stream.read(buf,size);
-		if( stream.gcount() < size ) break;
+		if( stream.gcount() < std::streamsize(size) ) break;
 		buf += size;
 		++result;
 	}

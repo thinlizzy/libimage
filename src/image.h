@@ -31,14 +31,24 @@ class Image {
 	void save(std::ostream & stream, int type) const;
 public:
 	Image();
+	Image(Image const &) = delete;
+	Image & operator=(Image const &) = delete;
 	Image(Image &&) = default;
-	//Image & operator=(Image &&) = default;
+	Image & operator=(Image &&) = default;
+    
 	explicit Image(char const * filename);
 	explicit Image(std::string const & filename);
 	Image(std::istream & stream, Type type);
 	// ~Image();
 	void load(char const * filename);
 	void load(std::istream & stream, Type type);
+    
+    Image clone() const;
+
+	Image thumbnail(Size squareSize) const;
+    Image rotate(double degrees) const;    
+    Image flipH() const;
+    Image flipV() const;
 
 	Size width() const;
 	Size height() const;
@@ -54,7 +64,6 @@ public:
 
 	void * getWindowSystemHeader() const;
 
-	Image thumbnail(Size squareSize) const;
 	void save(char const * filename) const;
 	void save(std::ostream & stream) const;
 	void save(std::ostream & stream, Type type) const;
