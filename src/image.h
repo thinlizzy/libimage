@@ -18,6 +18,10 @@ struct Color {
 
 enum Type { BMP, GIF, JPG, PNG, };
 
+enum ResizeFilter {
+    box, bilinear, bspline, bicubic, catmullrom, lanczos3,
+};
+
 class Image {
 	struct Deleter {
 		void operator()(FIBITMAP * image) const;
@@ -46,6 +50,7 @@ public:
     Image clone() const;
 
 	Image thumbnail(Size squareSize) const;
+    Image resize(Size width, Size height, ResizeFilter filter = bicubic) const;
     Image rotate(double degrees) const;    
     Image flipH() const;
     Image flipV() const;

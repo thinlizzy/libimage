@@ -4,6 +4,31 @@
 
 namespace img {
 
+FREE_IMAGE_FORMAT type2fif(Type type)
+{
+	switch(type) {
+        case BMP: return FIF_BMP;
+        case GIF: return FIF_GIF;
+        case JPG: return FIF_JPEG;
+        case PNG: return FIF_PNG;
+        default: return FIF_UNKNOWN;
+	}
+}
+
+FREE_IMAGE_FILTER convertFilter(ResizeFilter filter)
+{
+    switch(filter) {
+        case box: return FILTER_BOX;
+        case bilinear: return FILTER_BILINEAR;
+        case bspline: return FILTER_BSPLINE;
+        case bicubic: return FILTER_BICUBIC;
+        case catmullrom: return FILTER_CATMULLROM;
+        case lanczos3: return FILTER_LANCZOS3;
+        default: return FILTER_BOX;
+    }
+}
+
+
 Image::Image():
 	type(FIF_UNKNOWN)
 {}
@@ -152,6 +177,14 @@ Image Image::thumbnail(Size squareSize) const
 	return Image(thumbnail,type);
 }
 
+Image Image::resize(Size width, Size height, ResizeFilter filter) const
+{
+	FIBITMAP * result = FreeImage_Rescale(image.get(), width, height, convertFilter(filter));
+	if( ! result ) throw std::runtime_error("could not rescale image");
+    
+	return Image(result,type);    
+}
+
 void Image::save(char const * filename) const
 {
 	if( ! image ) throw std::runtime_error("can't save empty image");
@@ -206,17 +239,6 @@ long DLL_CALLCONV TellProcW(fi_handle handle)
 {
 	std::ostream & stream = *reinterpret_cast<std::ostream *>(handle);
 	return stream.tellp();
-}
-
-FREE_IMAGE_FORMAT type2fif(Type type)
-{
-	switch(type) {
-	case BMP: return FIF_BMP;
-	case GIF: return FIF_GIF;
-	case JPG: return FIF_JPEG;
-	case PNG: return FIF_PNG;
-	default: return FIF_UNKNOWN;
-	}
 }
 
 std::ios_base::seekdir getDir(int origin)
