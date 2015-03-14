@@ -5,6 +5,7 @@
 #include <istream>
 #include <ostream>
 #include <string>
+#include <memory>
 
 struct FIBITMAP;
 
@@ -59,6 +60,8 @@ public:
 	Size height() const;
 	unsigned bpp() const;
 	unsigned char * rawBits() const;
+
+	std::unique_ptr<unsigned char[]> toRawBits(unsigned targetBpp) const;
     
     //slow pixel access functions. use with care
     int getColorIndex(Size x, Size y) const;

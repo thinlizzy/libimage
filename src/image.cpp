@@ -136,6 +136,15 @@ unsigned char * Image::rawBits() const
 	return FreeImage_GetBits(image.get());
 }
 
+std::unique_ptr<unsigned char[]> Image::toRawBits(unsigned targetBpp) const
+{
+	auto scanWidth = width() * (targetBpp/8);
+	unsigned char * result = new unsigned char[height() * scanWidth];
+	FreeImage_ConvertToRawBits(result, image.get(), int(scanWidth), targetBpp,
+			FI_RGBA_RED_MASK, FI_RGBA_GREEN_MASK, FI_RGBA_BLUE_MASK, TRUE);
+	return std::unique_ptr<unsigned char[]>(result);
+}
+
 void * Image::getWindowSystemHeader() const
 {
 	// TODO use pImpl to select between windows and linux
