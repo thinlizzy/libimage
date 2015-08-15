@@ -1,6 +1,7 @@
 #include "image.h"
 #include <FreeImage.h>
 #include <stdexcept>
+#include <cassert>
 
 namespace img {
 
@@ -161,6 +162,14 @@ int Image::getTransparentColorIndex() const
     return FreeImage_GetTransparentIndex(image.get());
 }
 
+Color Image::getColorFromIndex(int colorIndex) const
+{
+	// todo log if colorIndex is out of range
+	RGBQUAD * pal = FreeImage_GetPalette(image.get());
+	auto & value = pal[colorIndex];
+	return {value.rgbRed,value.rgbGreen,value.rgbBlue,value.rgbReserved};
+}
+
 int Image::getColorIndex(Size x, Size y) const
 {
     BYTE result;
@@ -174,8 +183,14 @@ Color Image::getColor(Size x, Size y) const
     RGBQUAD value;
     // todo log if false
     FreeImage_GetPixelColor(image.get(),x,y,&value);
-    Color result = {value.rgbRed,value.rgbGreen,value.rgbBlue,value.rgbReserved};
-    return result;
+    return {value.rgbRed,value.rgbGreen,value.rgbBlue,value.rgbReserved};
+}
+
+bool Image::isTransparentPixel(Size x, Size y) const
+{
+	auto table = FreeImage_GetTransparencyTable(image.get());
+	assert(table != NULL);
+	return table[getColorIndex(x,y)] == 0;
 }
 
 Image Image::thumbnail(Size squareSize) const

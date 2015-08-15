@@ -63,12 +63,14 @@ public:
 
 	std::unique_ptr<unsigned char[]> toRawBits(unsigned targetBpp) const;
     
-    //slow pixel access functions. use with care
+    // slow pixel access functions. use with care. y starts at the bottom!
     int getColorIndex(Size x, Size y) const;
     Color getColor(Size x, Size y) const;
+    bool isTransparentPixel(Size x, Size y) const;
     
     bool transparent() const;
     int getTransparentColorIndex() const;
+    Color getColorFromIndex(int colorIndex) const;
 
 	void * getWindowSystemHeader() const;
 
