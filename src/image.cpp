@@ -225,6 +225,10 @@ void Image::save(char const * filename) const
 	if( ! FreeImage_Save(fif, image.get(), filename, 0 ) ) throw std::runtime_error("error saving image");
 }
 
+void Image::save(std::string const & filename) const {
+	save(filename.c_str());
+}
+
 
 unsigned DLL_CALLCONV ReadProc(void * buffer, unsigned size, unsigned count, fi_handle handle)
 {

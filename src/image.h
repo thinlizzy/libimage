@@ -75,6 +75,7 @@ public:
 	void * getWindowSystemHeader() const;
 
 	void save(char const * filename) const;
+	void save(std::string const & filename) const;
 	void save(std::ostream & stream) const;
 	void save(std::ostream & stream, Type type) const;
 };

@@ -28,31 +28,42 @@ img::Type getType(std::string const & filename)
 
 int main(int argc, char * argv[])
 {
-	std::string path = argc >=2 ? argv[1] : "";
+	std::string pathS,filenameS;
+	std::cout << "enter source path (with the trailing slash): " << std::flush;
+	std::getline(std::cin,pathS);
+	std::cout << "enter source filename: " << std::flush;
+	std::getline(std::cin, filenameS);
 
-	std::string filename;
-	std::cout << "enter source filename: ";
-	std::getline(std::cin,filename);
-	img::Image image((path+filename).c_str());
-
+	std::cout << "loading image" << std::endl;
+	img::Image image(pathS+filenameS);
+	std::cout << "creating thumbnail" << std::endl;
 	img::Image thumb(image.thumbnail(200));
 
-	std::string filenameT;
-	std::cout << "enter target filename: ";
+	std::string pathT,filenameT;
+	std::cout << "enter target path (with the trailing slash): " << std::flush;
+	std::getline(std::cin,pathT);
+	std::cout << "enter target filename: " << std::flush;
 	std::getline(std::cin,filenameT);
-	image.save((path+filenameT).c_str());
 
-	thumb.save((path+"thumb_"+filenameT).c_str());
+	std::cout << "saving new file" << std::endl;
+	image.save(pathT+filenameT);
+	std::cout << "saving a thumbnail" << std::endl;
+	thumb.save(pathT+"thumb_"+filenameT);
 
-	std::ifstream ifs((path+filename).c_str(),std::ios::binary);
-	img::Image image2(ifs,getType(filename));
+	std::cout << "opening source file as a stream" << std::endl;
+	std::ifstream ifs(pathS+filenameS,std::ios::binary);
+	if( ! ifs ) throw "error opening source file as a stream";
+	img::Image image2(ifs,getType(pathS+filenameS));
 
-	std::ofstream ofs((path+"stream_"+filename).c_str(),std::ios::binary);
+	std::cout << "saving source file as a stream" << std::endl;
+	std::ofstream ofs(pathT+"stream_"+filenameS,std::ios::binary|std::ios::out);
+	if( ! ofs ) throw "error opening first target file as a stream";
 	image2.save(ofs);
 
-	std::ofstream ofs2((path+"stream_"+filenameT).c_str(),std::ios::binary);
-	image2.save(ofs,getType(filenameT));
+	std::cout << "saving target file as a stream" << std::endl;
+	std::ofstream ofs2(pathT+"stream_"+filenameT,std::ios::binary|std::ios::out);
+	if( ! ofs2 ) throw "error opening second target file as a stream";
+	image2.save(ofs2,getType(filenameT));
 
 	return 0;
 }
-
