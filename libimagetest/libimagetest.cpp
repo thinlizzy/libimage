@@ -32,7 +32,7 @@ int main(int argc, char * argv[])
 	std::cout << "enter source path (with the trailing slash): " << std::flush;
 	std::getline(std::cin,pathS);
 	std::cout << "enter source filename: " << std::flush;
-	std::getline(std::cin, filenameS);
+	std::getline(std::cin,filenameS);
 
 	std::cout << "loading image" << std::endl;
 	img::Image image(pathS+filenameS);
