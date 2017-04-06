@@ -1,8 +1,8 @@
 cc_library(
-	name = "libimagetest",
+	name = "libimagetest-lib",
 	srcs = ["libimagetest.cpp"],
 	deps = [
-		"//libimage",
+		"//:libimage",
 	],
 	copts = [
 		"--std=c++1y",
@@ -10,24 +10,10 @@ cc_library(
 )
 
 cc_binary(
-	name = "libimagetest-win32",
+	name = "libimagetest",
 	deps = [
-		":libimagetest",
-		"@win32_user_libs//:freeimage",
-	],
-	copts = [
-		"--std=c++1y",
-	],
-	linkopts = [
-		"-lgdi32",
-	],
-)
-
-cc_binary(
-	name = "libimagetest-linux",
-	deps = [
-		":libimagetest",
-		"@linux_libs//:freeimage",
+		":libimagetest-lib",
+		"//external:freeimage",
 	],
 	copts = [
 		"--std=c++1y",
