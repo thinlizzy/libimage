@@ -3,7 +3,7 @@
 # linux
 
 new_local_repository(
-	name = "linux_libs",
+	name = "linux_freeimage",
 	path = "/usr/lib",
 	build_file_content = """
 cc_library(
@@ -35,7 +35,7 @@ cc_library(
 
 bind(
     name = "freeimage",
-    actual = "@linux_libs//:freeimage",
+    actual = "@linux_freeimage//:freeimage",
 )
 
 # else if win32 then
