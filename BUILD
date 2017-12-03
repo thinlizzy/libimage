@@ -5,6 +5,4 @@ cc_library(
 	srcs = ["src/image.cpp"],
 	hdrs = ["src/image.h"],
 	deps = ["//external:freeimage"],
-	copts = ["--std=c++1y"],
-	linkstatic = 1,
 )

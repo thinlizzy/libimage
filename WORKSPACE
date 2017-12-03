@@ -1,5 +1,3 @@
-# TODO add dependency to FreeImage.h somehow
-
 # linux
 
 new_local_repository(
@@ -24,6 +22,7 @@ cc_library(
 	name = "freeimage",
 	srcs = ["FreeImage.lib"],
 	hdrs = ["include/FreeImage.h"],
+	strip_include_prefix = "include",
 	visibility = ["//visibility:public"],
 )
 """,
@@ -33,16 +32,16 @@ cc_library(
 
 # if linux then
 
-bind(
-    name = "freeimage",
-    actual = "@linux_freeimage//:freeimage",
-)
+# bind(
+#     name = "freeimage",
+#     actual = "@linux_freeimage//:freeimage",
+# )
 
 # else if win32 then
 
-# bind(
-#     name = "freeimage",
-#     actual = "@win32_freeimage//:freeimage",
-# )
+bind(
+    name = "freeimage",
+    actual = "@win32_freeimage//:freeimage",
+)
 
 # end if
