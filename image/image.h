@@ -1,11 +1,10 @@
 #ifndef IMAGE_WRAPPER_H_GUARD_KJASIDc0ewir32j42nrjfdszf93
 #define IMAGE_WRAPPER_H_GUARD_KJASIDc0ewir32j42nrjfdszf93
 
-#include <memory>
 #include <istream>
+#include <memory>
 #include <ostream>
 #include <string>
-#include <memory>
 
 struct FIBITMAP;
 
