@@ -8,25 +8,25 @@ namespace img {
 FREE_IMAGE_FORMAT type2fif(Type type)
 {
 	switch(type) {
-        case BMP: return FIF_BMP;
-        case GIF: return FIF_GIF;
-        case JPG: return FIF_JPEG;
-        case PNG: return FIF_PNG;
-        default: return FIF_UNKNOWN;
+		case BMP: return FIF_BMP;
+		case GIF: return FIF_GIF;
+		case JPG: return FIF_JPEG;
+		case PNG: return FIF_PNG;
+		default: return FIF_UNKNOWN;
 	}
 }
 
 FREE_IMAGE_FILTER convertFilter(ResizeFilter filter)
 {
-    switch(filter) {
-        case box: return FILTER_BOX;
-        case bilinear: return FILTER_BILINEAR;
-        case bspline: return FILTER_BSPLINE;
-        case bicubic: return FILTER_BICUBIC;
-        case catmullrom: return FILTER_CATMULLROM;
-        case lanczos3: return FILTER_LANCZOS3;
-        default: return FILTER_BOX;
-    }
+	switch(filter) {
+		case box: return FILTER_BOX;
+		case bilinear: return FILTER_BILINEAR;
+		case bspline: return FILTER_BSPLINE;
+		case bicubic: return FILTER_BICUBIC;
+		case catmullrom: return FILTER_CATMULLROM;
+		case lanczos3: return FILTER_LANCZOS3;
+		default: return FILTER_BOX;
+	}
 }
 
 
@@ -88,38 +88,52 @@ void Image::load(char const * filename)
 
 Image Image::clone() const
 {
-    FIBITMAP * cloneDib = FreeImage_Clone(image.get());
+	FIBITMAP * cloneDib = FreeImage_Clone(image.get());
 	if( cloneDib == 0 ) throw std::runtime_error("error cloning image");
-    
+
+	return Image(cloneDib,type);
+}
+
+Image Image::to32bpp() const
+{
+	FIBITMAP * cloneDib = FreeImage_ConvertTo32Bits(image.get());
+	if( cloneDib == 0 ) throw std::runtime_error("error converting image to 32bpp");
+
 	return Image(cloneDib,type);
 }
 
 Image Image::rotate(double degrees) const
 {
-    FIBITMAP * cloneDib = FreeImage_Rotate(image.get(),degrees);
+	FIBITMAP * cloneDib = FreeImage_Rotate(image.get(),degrees);
 	if( cloneDib == 0 ) throw std::runtime_error("error rotating image");
 	return Image(cloneDib,type);
 }
 
 Image Image::flipH() const
 {
-    auto result = clone();
-    FreeImage_FlipHorizontal(result.image.get());
-    return result;
+	auto result = clone();
+	FreeImage_FlipHorizontal(result.image.get());
+	return result;
 }
 
 Image Image::flipV() const
 {
-    auto result = clone();
-    FreeImage_FlipVertical(result.image.get());
-    return result;
+	auto result = clone();
+	FreeImage_FlipVertical(result.image.get());
+	return result;
 }
 
-Image Image::clip(int left, int top, int right, int bottom)
+Image Image::clip(int left, int top, int right, int bottom) const
 {
-    FIBITMAP * cloneDib = FreeImage_Copy(image.get(),left,top,right,bottom);
-	if( cloneDib == 0 ) throw std::runtime_error("error cloning image");
+	FIBITMAP * cloneDib = FreeImage_Copy(image.get(),left,top,right,bottom);
+	if( cloneDib == 0 ) throw std::runtime_error("error clipping image");
 	return Image(cloneDib,type);
+}
+
+Image & Image::replace(Color origColor, Color newColor)
+{
+	FreeImage_ApplyColorMapping(image.get(), reinterpret_cast<RGBQUAD *>(&origColor), reinterpret_cast<RGBQUAD *>(&newColor), 1, false, false);
+	return *this;
 }
 
 Size Image::width() const
@@ -159,12 +173,12 @@ void * Image::getWindowSystemHeader() const
 
 bool Image::transparent() const
 {
-    return FreeImage_IsTransparent(image.get());
+	return FreeImage_IsTransparent(image.get());
 }
 
 int Image::getTransparentColorIndex() const
 {
-    return FreeImage_GetTransparentIndex(image.get());
+	return FreeImage_GetTransparentIndex(image.get());
 }
 
 Color Image::getColorFromIndex(int colorIndex) const
@@ -177,18 +191,18 @@ Color Image::getColorFromIndex(int colorIndex) const
 
 int Image::getColorIndex(Size x, Size y) const
 {
-    BYTE result;
-    // todo log if false
-    FreeImage_GetPixelIndex(image.get(),x,y,&result);
-    return result;
+	BYTE result;
+	// todo log if false
+	FreeImage_GetPixelIndex(image.get(),x,y,&result);
+	return result;
 }
 
 Color Image::getColor(Size x, Size y) const
 {
-    RGBQUAD value;
-    // todo log if false
-    FreeImage_GetPixelColor(image.get(),x,y,&value);
-    return {value.rgbRed,value.rgbGreen,value.rgbBlue,value.rgbReserved};
+	RGBQUAD value;
+	// todo log if false
+	FreeImage_GetPixelColor(image.get(),x,y,&value);
+	return {value.rgbRed,value.rgbGreen,value.rgbBlue,value.rgbReserved};
 }
 
 bool Image::isTransparentPixel(Size x, Size y) const
@@ -210,8 +224,8 @@ Image Image::resize(Size width, Size height, ResizeFilter filter) const
 {
 	FIBITMAP * result = FreeImage_Rescale(image.get(), width, height, convertFilter(filter));
 	if( ! result ) throw std::runtime_error("could not rescale image");
-    
-	return Image(result,type);    
+
+	return Image(result,type);
 }
 
 void Image::save(char const * filename) const
@@ -230,7 +244,8 @@ void Image::save(char const * filename) const
 	if( ! FreeImage_Save(fif, image.get(), filename, 0 ) ) throw std::runtime_error("error saving image");
 }
 
-void Image::save(std::string const & filename) const {
+void Image::save(std::string const & filename) const
+{
 	save(filename.c_str());
 }
 

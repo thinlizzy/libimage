@@ -13,13 +13,14 @@ namespace img {
 typedef unsigned Size;
 
 struct Color {
-    unsigned char r,g,b,a;
+	using component = unsigned char;
+	component r,g,b,a;
 };
 
 enum Type { BMP, GIF, JPG, PNG, };
 
 enum ResizeFilter {
-    box, bilinear, bspline, bicubic, catmullrom, lanczos3,
+	box, bilinear, bspline, bicubic, catmullrom, lanczos3,
 };
 
 class Image {
@@ -39,22 +40,25 @@ public:
 	Image & operator=(Image const &) = delete;
 	Image(Image &&) = default;
 	Image & operator=(Image &&) = default;
-    
+
 	explicit Image(char const * filename);
 	explicit Image(std::string const & filename);
 	Image(std::istream & stream, Type type);
 	// ~Image();
 	void load(char const * filename);
 	void load(std::istream & stream, Type type);
-    
-    Image clone() const;
+
+	Image clone() const;
+	Image to32bpp() const;
 
 	Image thumbnail(Size squareSize) const;
-    Image resize(Size width, Size height, ResizeFilter filter = bicubic) const;
-    Image rotate(double degrees) const;    
-    Image flipH() const;
-    Image flipV() const;
-    Image clip(int left, int top, int right, int bottom);
+	Image resize(Size width, Size height, ResizeFilter filter = bicubic) const;
+	Image rotate(double degrees) const;
+	Image flipH() const;
+	Image flipV() const;
+	Image clip(int left, int top, int right, int bottom) const;
+
+	Image & replace(Color origColor, Color newColor);
 
 	Size width() const;
 	Size height() const;
@@ -62,15 +66,15 @@ public:
 	unsigned char * rawBits() const;
 
 	std::unique_ptr<unsigned char[]> toRawBits(unsigned targetBpp) const;
-    
-    // slow pixel access functions. use with care. y starts at the bottom!
-    int getColorIndex(Size x, Size y) const;
-    Color getColor(Size x, Size y) const;
-    bool isTransparentPixel(Size x, Size y) const;
-    
-    bool transparent() const;
-    int getTransparentColorIndex() const;
-    Color getColorFromIndex(int colorIndex) const;
+
+	// slow pixel access functions. use with care. y starts at the bottom!
+	int getColorIndex(Size x, Size y) const;
+	Color getColor(Size x, Size y) const;
+	bool isTransparentPixel(Size x, Size y) const;
+
+	bool transparent() const;
+	int getTransparentColorIndex() const;
+	Color getColorFromIndex(int colorIndex) const;
 
 	void * getWindowSystemHeader() const;
 
