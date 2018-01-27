@@ -54,6 +54,7 @@ public:
     Image rotate(double degrees) const;    
     Image flipH() const;
     Image flipV() const;
+    Image clip(int left, int top, int right, int bottom);
 
 	Size width() const;
 	Size height() const;

@@ -98,7 +98,6 @@ Image Image::rotate(double degrees) const
 {
     FIBITMAP * cloneDib = FreeImage_Rotate(image.get(),degrees);
 	if( cloneDib == 0 ) throw std::runtime_error("error rotating image");
-    
 	return Image(cloneDib,type);
 }
 
@@ -116,6 +115,12 @@ Image Image::flipV() const
     return result;
 }
 
+Image Image::clip(int left, int top, int right, int bottom)
+{
+    FIBITMAP * cloneDib = FreeImage_Copy(image.get(),left,top,right,bottom);
+	if( cloneDib == 0 ) throw std::runtime_error("error cloning image");
+	return Image(cloneDib,type);
+}
 
 Size Image::width() const
 {
