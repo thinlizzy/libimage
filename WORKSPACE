@@ -27,21 +27,3 @@ cc_library(
 )
 """,
 )
-
-# bindings for multiplatform
-
-# if linux then
-
-# bind(
-#     name = "freeimage",
-#     actual = "@linux_freeimage//:freeimage",
-# )
-
-# else if win32 then
-
-bind(
-    name = "freeimage",
-    actual = "@win32_freeimage//:freeimage",
-)
-
-# end if
