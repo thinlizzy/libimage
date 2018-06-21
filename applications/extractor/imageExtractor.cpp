@@ -9,6 +9,7 @@
 #include <vector>
 #include <cmath>
 #include <iomanip>
+#include <optional>
 
 using namespace std::string_literals;
 
@@ -30,6 +31,11 @@ struct CommandLine {
     std::string flagOrDefault(std::string const & flagname, std::string const & defValue) {
         auto it = flags.find(flagname);
         return it == flags.end() ? defValue : it->second;
+    }
+    std::optional<std::string> flagOptional(std::string const & flagname) {
+        auto it = flags.find(flagname);
+        if( it == flags.end() ) return std::nullopt;
+        return std::optional(it->second);
     }
 };
 
@@ -68,6 +74,7 @@ struct FilenameBuilder {
 };
 
 CommandLine parseCommandLine(int argc, char **argv);
+img::Color parseColor(std::string const & colorStr);
 
 // TODO add a flag to save all images in a single one
 int main(int argc, char * argv[]) {
@@ -89,6 +96,13 @@ int main(int argc, char * argv[]) {
     auto imagesPerLine = std::stoi(commandLine.flagOrDefault("images_per_line","-1"));
     if( imagesPerLine < -1 ) die("invalid images_per_line flag");
     if( imagesPerLine == -1 ) imagesPerLine = std::numeric_limits<int>::max();
+    img::Color transpColor,newTranspColor;
+    auto optTranspColor = commandLine.flagOptional("transparent_color");
+    if( optTranspColor ) {
+        transpColor = parseColor(*optTranspColor);
+        newTranspColor = transpColor;
+        newTranspColor.a = 0;
+    }
 
     auto sourceImage = img::Image(commandLine.parameters[0]);
 
@@ -96,6 +110,9 @@ int main(int argc, char * argv[]) {
     auto bottomRight = endingPoint;
     for( int i = 1; i <= targetImages; ++i ) {
         auto targetImage = sourceImage.clip(topLeft.x,topLeft.y,bottomRight.x,bottomRight.y);
+        if( optTranspColor ) {
+            targetImage = std::move(targetImage.to32bpp().replace(transpColor,newTranspColor));
+        }
         auto targetFilename = targetImageNameBuilder.build(i);
         std::cout << "writing " << targetFilename << std::endl;
         targetImage.save(targetFilename);
@@ -127,6 +144,23 @@ CommandLine parseCommandLine(int argc, char **argv) {
             result.flags.insert_or_assign(std::move(flagname),std::move(current));
             flagname.clear(); // it is moved away, but...
         }
+    }
+    return result;
+}
+
+img::Color parseColor(std::string const & colorStr) {
+    auto iss = std::istringstream(colorStr);
+    auto result = img::Color();
+    auto extractInt = [&iss](auto & var) -> std::istringstream & { int intVar; iss >> intVar; var = intVar; return iss; };
+    extractInt(result.r);
+    if( iss.get() != ',' ) die("missing a comma when parsing color");
+    extractInt(result.g);
+    if( iss.get() != ',' ) die("missing a comma when parsing color");
+    if( ! extractInt(result.b) ) die("invalid color values");
+    if( iss.get() == ',' ) {
+        if( ! extractInt(result.a) ) die("invalid color values");
+    } else {
+        result.a = 255;
     }
     return result;
 }
