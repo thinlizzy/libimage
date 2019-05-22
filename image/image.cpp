@@ -29,6 +29,15 @@ FREE_IMAGE_FILTER convertFilter(ResizeFilter filter)
 	}
 }
 
+RGBQUAD toRgbQuad(Color color) {
+	RGBQUAD result;
+	result.rgbRed = color.r;
+	result.rgbGreen = color.g;
+	result.rgbBlue = color.b;
+	result.rgbReserved = color.a;
+	return result;
+}
+
 
 Image::Image():
 	type(FIF_UNKNOWN)
@@ -132,7 +141,9 @@ Image Image::clip(int left, int top, int right, int bottom) const
 
 Image & Image::replace(Color origColor, Color newColor)
 {
-	FreeImage_ApplyColorMapping(image.get(), reinterpret_cast<RGBQUAD *>(&origColor), reinterpret_cast<RGBQUAD *>(&newColor), 1, false, false);
+	auto origQuad = toRgbQuad(origColor);
+	auto newQuad = toRgbQuad(newColor);
+	FreeImage_ApplyColorMapping(image.get(),&origQuad,&newQuad,1,false,false);
 	return *this;
 }
 
@@ -197,18 +208,22 @@ int Image::getColorIndex(Size x, Size y) const
 	return result;
 }
 
-Color Image::getColor(Size x, Size y) const
-{
+Color Image::getColor(Size x, Size y) const {
 	RGBQUAD value;
 	// todo log if false
 	FreeImage_GetPixelColor(image.get(),x,y,&value);
 	return {value.rgbRed,value.rgbGreen,value.rgbBlue,value.rgbReserved};
 }
 
-bool Image::isTransparentPixel(Size x, Size y) const
-{
+Image & Image::setColor(Size x, Size y, Color color) {
+	auto quad = toRgbQuad(color);
+	FreeImage_SetPixelColor(image.get(),x,y,&quad);
+	return *this;
+}
+
+bool Image::isTransparentPixel(Size x, Size y) const {
 	auto table = FreeImage_GetTransparencyTable(image.get());
-	assert(table != NULL);
+	assert(table != nullptr);
 	return table[getColorIndex(x,y)] == 0;
 }
 

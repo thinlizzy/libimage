@@ -71,6 +71,7 @@ public:
 	int getColorIndex(Size x, Size y) const;
 	Color getColor(Size x, Size y) const;
 	bool isTransparentPixel(Size x, Size y) const;
+	Image & setColor(Size x, Size y, Color color);
 
 	bool transparent() const;
 	int getTransparentColorIndex() const;
