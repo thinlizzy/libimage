@@ -1,6 +1,7 @@
 #ifndef IMAGE_WRAPPER_H_GUARD_KJASIDc0ewir32j42nrjfdszf93
 #define IMAGE_WRAPPER_H_GUARD_KJASIDc0ewir32j42nrjfdszf93
 
+#include <functional>
 #include <istream>
 #include <memory>
 #include <ostream>
@@ -15,6 +16,12 @@ typedef unsigned Size;
 struct Color {
 	using component = unsigned char;
 	component r,g,b,a;
+	bool operator==(Color const & color) const {
+		return r == color.r && g == color.g && b == color.b && a == color.a;
+	}
+	bool operator!=(Color const & color) const {
+		return ! operator==(color);
+	}
 };
 
 enum Type { BMP, GIF, JPG, PNG, };
@@ -59,6 +66,7 @@ public:
 	Image clip(int left, int top, int right, int bottom) const;
 
 	Image & replace(Color origColor, Color newColor);
+	Image & replaceColors(std::function<bool(img::Color)> predicate, std::function<img::Color(img::Color)> colorChanger);
 
 	Size width() const;
 	Size height() const;

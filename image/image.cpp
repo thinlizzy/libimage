@@ -139,13 +139,24 @@ Image Image::clip(int left, int top, int right, int bottom) const
 	return Image(cloneDib,type);
 }
 
-Image & Image::replace(Color origColor, Color newColor)
-{
+Image & Image::replace(Color origColor, Color newColor) {
 	auto origQuad = toRgbQuad(origColor);
 	auto newQuad = toRgbQuad(newColor);
 	FreeImage_ApplyColorMapping(image.get(),&origQuad,&newQuad,1,false,false);
 	return *this;
 }
+
+Image &	Image::replaceColors(std::function<bool(img::Color)> predicate, std::function<img::Color(img::Color)> colorChanger) {
+	for( Size r = 0; r != height(); ++r )
+		for( Size c = 0; c != width(); ++c ) {
+			auto color = getColor(c,r);
+			if( predicate(color) ) {
+				setColor(c,r,colorChanger(color));
+			}
+		}
+	return *this;
+}
+
 
 Size Image::width() const
 {
