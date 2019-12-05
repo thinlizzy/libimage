@@ -1,3 +1,3 @@
 add_executable(libimagetest libimagetest.cpp)
 
-target_link_libraries(libimagetest libimage ${FREEIMAGE_LIBRARIES})
+target_link_libraries(libimagetest libimage)

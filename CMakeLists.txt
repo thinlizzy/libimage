@@ -3,13 +3,16 @@ project(libimage)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR})
-set(FREEIMAGE_FIND_REQUIRED TRUE)
-find_package(FreeImage)
-include_directories(SYSTEM ${FREEIMAGE_INCLUDE_DIRS})
+add_compile_definitions(FREEIMAGE_LIB)
 
 include_directories(image)
+include_directories(FreeImage)
 
-add_subdirectory("image")
-add_subdirectory("applications/libimagetest")
-add_subdirectory("applications/extractor")
+add_subdirectory(FreeImage)
+
+add_library(libimage image/image.cpp image/image.h)
+target_link_libraries(libimage FreeImageLib)
+
+add_subdirectory(applications/libimagetest)
+add_subdirectory(applications/extractor)
+

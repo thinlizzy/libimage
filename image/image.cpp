@@ -378,4 +378,17 @@ void Image::load(std::istream & stream, Type type)
 	this->type = fif;
 }
 
+ImageInitializer::ImageInitializer() {
+	class ImageInitializerHelper {
+	public:
+		ImageInitializerHelper() {
+			FreeImage_Initialise();
+		}
+		~ImageInitializerHelper() {
+			FreeImage_DeInitialise();
+		}
+	};
+	static ImageInitializerHelper init;
+}
+
 }

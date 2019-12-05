@@ -30,7 +30,12 @@ enum ResizeFilter {
 	box, bilinear, bspline, bicubic, catmullrom, lanczos3,
 };
 
-class Image {
+class ImageInitializer {
+protected:
+	ImageInitializer();
+};
+
+class Image: private ImageInitializer {
 	struct Deleter {
 		void operator()(FIBITMAP * image) const;
 	};
