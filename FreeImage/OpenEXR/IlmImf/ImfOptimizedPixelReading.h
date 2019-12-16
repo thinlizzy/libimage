@@ -70,7 +70,7 @@ EXR_FORCEINLINE
 bool
 isPointerSSEAligned (const void* EXR_RESTRICT pPointer)
 {
-    unsigned long trailingBits = ((unsigned long)pPointer) & 15;
+    unsigned long long trailingBits = ((unsigned long long)pPointer) & 15ULL;
     return trailingBits == 0;
 }
 

@@ -60,6 +60,20 @@ static bool GLOBAL_SYSTEM_LITTLE_ENDIAN =
 #define EXR_FORCEINLINE inline
 #define EXR_RESTRICT __restrict
 
+#ifdef __MINGW32__
+
+static void* EXRAllocAligned(size_t size, size_t alignment)
+{
+	return _aligned_malloc(size, alignment);
+}
+
+static void EXRFreeAligned(void* ptr)
+{
+	_aligned_free(ptr);
+}
+
+#else
+
 static void* EXRAllocAligned(size_t size, size_t alignment)
 {
     void* ptr = 0;
@@ -72,6 +86,8 @@ static void EXRFreeAligned(void* ptr)
 {
     free(ptr);
 }
+
+#endif
 
 #elif defined _MSC_VER
 
