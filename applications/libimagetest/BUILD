@@ -2,10 +2,7 @@ cc_library(
 	name = "libimagetest-lib",
 	srcs = ["libimagetest.cpp"],
 	deps = [
-		"//:libimage",
-	],
-	copts = [
-		"--std=c++1y",
+		"//image",
 	],
 )
 
@@ -13,9 +10,5 @@ cc_binary(
 	name = "libimagetest",
 	deps = [
 		":libimagetest-lib",
-		"//external:freeimage",
-	],
-	copts = [
-		"--std=c++1y",
 	],
 )
