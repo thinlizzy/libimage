@@ -1,0 +1,56 @@
+package(default_visibility = ["//image:__subpackages__"])
+
+cc_library(
+	name = "FreeImage",
+	srcs = glob(
+		include = [
+			"*.h",
+			"FreeImage/*.h",
+			"FreeImage/*.cpp",
+			"FreeImageToolkit/*.h",
+			"FreeImageToolkit/*.cpp",
+			"LibPNG/*.h",
+			"LibPNG/*.c",
+			"LibJPEG/*.h",
+			"LibJPEG/*.c",
+			"LibOpenJPEG/*.h",
+			"LibOpenJPEG/*.c",
+			"Metadata/*.h",
+			"Metadata/*.cpp",
+		],
+		exclude = [
+			"FreeImage.h",
+			"LibJPEG/cjpeg.c",
+			"LibJPEG/ckconfig.c",
+			"LibJPEG/jpegtran.c",
+			"LibJPEG/rdjpgcom.c",
+			"LibJPEG/wrjpgcom.c",
+			"LibJPEG/jmemansi.c",
+			"LibJPEG/jmemdos.c",
+			"LibJPEG/jmemmac.c",
+			"LibJPEG/jmemname.c",
+			"LibJPEG/djpeg.c",
+			"LibOpenJPEG/t1_generate_luts.c",
+			"LibPNG/pngtest.c",
+		],
+	),
+	hdrs = ["FreeImage.h"],
+	deps = [
+		"//FreeImage/LibJXR",
+		"//FreeImage/LibRawLite",
+		"//FreeImage/LibTIFF4",
+		"//FreeImage/LibWebP",
+		"//FreeImage/OpenEXR",
+		"//FreeImage/ZLib",
+	],
+	defines = [
+		"FREEIMAGE_LIB",
+		"USE_JPIP",
+		"OPJ_STATIC",
+		"LIBRAW_NODLL",
+	],
+	includes = [
+		".",
+		"FreeImage",
+	],
+)
