@@ -53,4 +53,5 @@ cc_library(
 		".",
 		"FreeImage",
 	],
+	copts = ["-std:c++14"],
 )

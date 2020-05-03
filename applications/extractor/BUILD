@@ -4,6 +4,7 @@ cc_library(
 	deps = [
 		"//image",
 	],
+	copts = ["-std:c++17"],
 )
 
 cc_binary(

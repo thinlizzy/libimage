@@ -23,4 +23,5 @@ cc_library(
 		"IlmThread",
 		"../ZLib",
 	],
+	copts = ["-std:c++14"],
 )
