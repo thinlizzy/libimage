@@ -53,5 +53,8 @@ cc_library(
 		".",
 		"FreeImage",
 	],
-	copts = ["-std:c++14"],
+	copts = select({
+		"@bazel_tools//src/conditions:windows": ["-std:c++14"],
+		"//conditions:default": ["-std=c++14"],
+	}),
 )
