@@ -33,5 +33,8 @@ cc_library(
 		"@bazel_tools//src/conditions:windows": ["WIN32"],
 		"//conditions:default": [],
 	}),
-	copts = ["-std:c++14"],
+	copts = select({
+		"@bazel_tools//src/conditions:windows": ["-std:c++14"],
+		"//conditions:default": ["-std=c++14"],
+	}),
 )
