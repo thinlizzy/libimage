@@ -12,6 +12,6 @@ cc_library(
 	],
 	defines = select({
 		"@bazel_tools//src/conditions:windows": ["WIN32"],
-		"//conditions:default": [],
+		"//conditions:default": ["PLATFORM_ANSI"],
 	}),
 )
