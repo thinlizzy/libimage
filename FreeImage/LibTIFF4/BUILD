@@ -60,6 +60,7 @@ cc_library(
 		"tiffconf.h",
 	],
 	deps = [
+		"//FreeImage/LibJPEG",
 	],
 	includes = [
 		"../LibJPEG",
