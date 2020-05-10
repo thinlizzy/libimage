@@ -7,6 +7,7 @@ cc_library(
 	deps = [
 	],
 	includes = [
+		"common/include",
 		"image/sys",
 		"jxrgluelib",
 	],
