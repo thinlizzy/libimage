@@ -1,5 +1,15 @@
 package(default_visibility = ["//FreeImage:__subpackages__"])
 
+TEXTUAL_HEADERS = [
+	"src/libraw_fuji_compressed.cpp",
+	"src/libraw_xtrans_compressed.cpp",
+	"internal/aahd_demosaic.cpp",
+	"internal/dht_demosaic.cpp",
+	"internal/dcb_demosaicing.c",
+	"internal/libraw_x3f.cpp",
+	"internal/wf_filtering.cpp",
+]
+
 cc_library(
 	name = "LibRawLite",
 	srcs = glob(
@@ -9,27 +19,15 @@ cc_library(
 			"internal/*.c",
 			"internal/*.cpp",
 		],
-		exclude = [
-			"src/libraw_fuji_compressed.cpp",
-			"src/libraw_xtrans_compressed.cpp",
-			"internal/aahd_demosaic.cpp",
-			"internal/dht_demosaic.cpp",
-			"internal/dcb_demosaicing.c",
-			"internal/libraw_x3f.cpp",
-			"internal/wf_filtering.cpp",
-		],
+		exclude = TEXTUAL_HEADERS,
 	) + ["dcraw/dcraw.c"],
 	hdrs = glob(["libraw/*.h"]),
-	textual_hdrs = [
-		"src/libraw_fuji_compressed.cpp",
-		"internal/libraw_x3f.cpp",
-	],
+	textual_hdrs = TEXTUAL_HEADERS,
 	deps = [
 		"//FreeImage/LibJPEG",
 	],
 	includes = [
 		".",
-		"src",
 		"../LibJPEG",
 	],
 	defines = [
