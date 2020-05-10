@@ -26,7 +26,9 @@ cc_library(
 		"//FreeImage/LibJPEG",
 	],
 	includes = [
+		".",
 		"src",
+		"../LibJPEG",
 	],
 	defines = [
 		"NO_JASPER",
