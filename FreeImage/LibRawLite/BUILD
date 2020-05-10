@@ -15,12 +15,14 @@ cc_library(
 			"internal/aahd_demosaic.cpp",
 			"internal/dht_demosaic.cpp",
 			"internal/dcb_demosaicing.c",
+			"internal/libraw_x3f.cpp",
 			"internal/wf_filtering.cpp",
 		],
 	) + ["dcraw/dcraw.c"],
 	hdrs = glob(["libraw/*.h"]),
 	textual_hdrs = [
 		"src/libraw_fuji_compressed.cpp",
+		"internal/libraw_x3f.cpp",
 	],
 	deps = [
 		"//FreeImage/LibJPEG",
