@@ -19,11 +19,14 @@ cc_library(
 		],
 	) + ["dcraw/dcraw.c"],
 	hdrs = glob(["libraw/*.h"]),
+	textual_hdrs = [
+		"src/libraw_fuji_compressed.cpp",
+	],
 	deps = [
+		"//FreeImage/LibJPEG",
 	],
 	includes = [
-		".",
-		"../LibJPEG",
+		"src",
 	],
 	defines = [
 		"NO_JASPER",
