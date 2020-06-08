@@ -215,20 +215,20 @@ int Image::getColorIndex(Size x, Size y) const
 {
 	BYTE result;
 	// todo log if false
-	FreeImage_GetPixelIndex(image.get(),x,y,&result);
+	FreeImage_GetPixelIndex(image.get(),x,height()-y-1,&result);
 	return result;
 }
 
 Color Image::getColor(Size x, Size y) const {
 	RGBQUAD value;
 	// todo log if false
-	FreeImage_GetPixelColor(image.get(),x,y,&value);
+	FreeImage_GetPixelColor(image.get(),x,height()-y-1,&value);
 	return {value.rgbRed,value.rgbGreen,value.rgbBlue,value.rgbReserved};
 }
 
 Image & Image::setColor(Size x, Size y, Color color) {
 	auto quad = toRgbQuad(color);
-	FreeImage_SetPixelColor(image.get(),x,y,&quad);
+	FreeImage_SetPixelColor(image.get(),x,height()-y-1,&quad);
 	return *this;
 }
 
