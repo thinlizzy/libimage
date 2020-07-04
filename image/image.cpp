@@ -134,7 +134,7 @@ Image Image::flipV() const
 
 Image Image::clip(int left, int top, int right, int bottom) const
 {
-	FIBITMAP * cloneDib = FreeImage_Copy(image.get(),left,top,right,bottom);
+	FIBITMAP * cloneDib = FreeImage_Copy(image.get(),left,top,right+1,bottom+1);
 	if( cloneDib == 0 ) throw std::runtime_error("error clipping image");
 	return Image(cloneDib,type);
 }

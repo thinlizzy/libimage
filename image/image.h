@@ -68,6 +68,7 @@ public:
 	Image rotate(double degrees) const;
 	Image flipH() const;
 	Image flipV() const;
+	// rectangle is closed
 	Image clip(int left, int top, int right, int bottom) const;
 
 	Image & replace(Color origColor, Color newColor);
