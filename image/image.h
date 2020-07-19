@@ -99,6 +99,10 @@ public:
 	void save(std::ostream & stream, Type type) const;
 };
 
+inline std::ostream & operator<<(std::ostream & os, Color const & color) {
+	return os << '(' << int(color.r) << ',' << int(color.g) << ',' << int(color.b) << ',' << int(color.a) << ')';
+}
+
 }
 
 #endif
