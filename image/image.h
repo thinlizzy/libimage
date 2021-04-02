@@ -47,16 +47,18 @@ class Image: private ImageInitializer {
 
 	void save(std::ostream & stream, int type) const;
 public:
-	Image();
+	Image(); // create a zombie image
+	// ~Image();
 	Image(Image const &) = delete;
 	Image & operator=(Image const &) = delete;
 	Image(Image &&) = default;
 	Image & operator=(Image &&) = default;
 
+	Image(Size width, Size height, int bpp); // create a black image
 	explicit Image(char const * filename);
 	explicit Image(std::string const & filename);
 	Image(std::istream & stream, Type type);
-	// ~Image();
+
 	void load(char const * filename);
 	void load(std::istream & stream, Type type);
 
@@ -71,8 +73,11 @@ public:
 	// rectangle is closed
 	Image clip(int left, int top, int right, int bottom) const;
 
+	// non-const functions
 	Image & replace(Color origColor, Color newColor);
 	Image & replaceColors(std::function<bool(img::Color)> predicate, std::function<img::Color(img::Color)> colorChanger);
+
+	bool pasteFrom(Image const & subImage, Size x, Size y);
 
 	Size width() const;
 	Size height() const;
@@ -95,6 +100,8 @@ public:
 
 	void save(char const * filename) const;
 	void save(std::string const & filename) const;
+	void save(wchar_t const * filename) const;
+	void save(std::wstring const & filename) const;
 	void save(std::ostream & stream) const;
 	void save(std::ostream & stream, Type type) const;
 };

@@ -43,6 +43,14 @@ Image::Image():
 	type(FIF_UNKNOWN)
 {}
 
+Image::Image(Size width, Size height, int bpp):
+	Image(FreeImage_Allocate(width,height,bpp),FIF_UNKNOWN)
+{
+	if( ! image ) {
+		throw std::runtime_error("failed to create image");
+	}
+}
+
 Image::Image(char const * filename)
 {
 	load(filename);
@@ -139,6 +147,7 @@ Image Image::clip(int left, int top, int right, int bottom) const
 	return Image(cloneDib,type);
 }
 
+
 Image & Image::replace(Color origColor, Color newColor) {
 	auto origQuad = toRgbQuad(origColor);
 	auto newQuad = toRgbQuad(newColor);
@@ -156,6 +165,14 @@ Image &	Image::replaceColors(std::function<bool(img::Color)> predicate, std::fun
 		}
 	return *this;
 }
+
+bool Image::pasteFrom(const Image & subImage, Size x, Size y) {
+	if( ! FreeImage_Paste(image.get(),subImage.image.get(),x,y,256) ) { // >255 = no alpha blend
+		return false;
+	}
+	return true;
+}
+
 
 
 Size Image::width() const
@@ -254,8 +271,7 @@ Image Image::resize(Size width, Size height, ResizeFilter filter) const
 	return Image(result,type);
 }
 
-void Image::save(char const * filename) const
-{
+void Image::save(char const * filename) const {
 	if( ! image ) throw std::runtime_error("can't save empty image");
 
 	// try to guess the file format from the file extension
@@ -272,6 +288,25 @@ void Image::save(char const * filename) const
 
 void Image::save(std::string const & filename) const
 {
+	save(filename.c_str());
+}
+
+void Image::save(wchar_t const * filename) const {
+	if( ! image ) throw std::runtime_error("can't save empty image");
+
+	// try to guess the file format from the file extension
+	FREE_IMAGE_FORMAT fif = FreeImage_GetFIFFromFilenameU(filename);
+	if( fif == FIF_UNKNOWN ) throw std::runtime_error("image filename not supported");
+	if( ! FreeImage_FIFSupportsWriting(fif) ) throw std::runtime_error("image file format not supported");
+
+	auto bpp = FreeImage_GetBPP(image.get());
+	if( ! FreeImage_FIFSupportsExportBPP(fif, bpp) ) throw std::runtime_error("image file format not supported for current bpp");
+
+	// flag = 0 for now. need to customize it in some way
+	if( ! FreeImage_SaveU(fif, image.get(), filename, 0 ) ) throw std::runtime_error("error saving image");
+}
+
+void Image::save(std::wstring const & filename) const {
 	save(filename.c_str());
 }
 
@@ -353,6 +388,9 @@ void Image::save(std::ostream & stream, Type type) const
 
 void Image::save(std::ostream & stream, int type) const
 {
+	if( type == FIF_UNKNOWN ) {
+		throw std::runtime_error("can't save images with unspecified format to a stream");
+	}
 	FreeImageIO io;
 	io.read_proc  = 0;
 	io.write_proc = &WriteProc;
