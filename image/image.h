@@ -54,7 +54,8 @@ public:
 	Image(Image &&) = default;
 	Image & operator=(Image &&) = default;
 
-	Image(Size width, Size height, int bpp); // create a black image
+ 	/** Create a black image. */
+	Image(Size width, Size height, int bpp);
 	explicit Image(char const * filename);
 	explicit Image(std::string const & filename);
 	Image(std::istream & stream, Type type);
@@ -104,7 +105,12 @@ public:
 	void save(std::wstring const & filename) const;
 	void save(std::ostream & stream) const;
 	void save(std::ostream & stream, Type type) const;
+
+	explicit operator bool() const;
 };
+
+Type TypeFromExtension(char const * filename);
+Type TypeFromExtension(std::string const & filename);
 
 inline std::ostream & operator<<(std::ostream & os, Color const & color) {
 	return os << '(' << int(color.r) << ',' << int(color.g) << ',' << int(color.b) << ',' << int(color.a) << ')';

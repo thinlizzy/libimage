@@ -1,7 +1,9 @@
 #include "image.h"
-#include <FreeImage.h>
-#include <stdexcept>
+#include <algorithm>
 #include <cassert>
+#include <cstring>
+#include <stdexcept>
+#include <FreeImage.h>
 
 namespace img {
 
@@ -14,6 +16,16 @@ FREE_IMAGE_FORMAT type2fif(Type type)
 		case PNG: return FIF_PNG;
 		default: return FIF_UNKNOWN;
 	}
+}
+
+Type TypeFromExtensionImpl(std::string ext) {
+	if( ext.empty() ) throw std::runtime_error("filename has no extension");
+	std::transform(ext.begin(),ext.end(),ext.begin(),[](char ch) { return char(std::toupper(ch)); });
+	if( ext == ".BMP" ) return BMP;
+	if( ext == ".GIF" ) return GIF;
+	if( ext == ".JPG" ) return JPG;
+	if( ext == ".PNG" ) return PNG;
+	throw std::runtime_error("unsupported extension " + ext);
 }
 
 FREE_IMAGE_FILTER convertFilter(ResizeFilter filter)
@@ -310,21 +322,45 @@ void Image::save(std::wstring const & filename) const {
 	save(filename.c_str());
 }
 
-
 unsigned DLL_CALLCONV ReadProc(void * buffer, unsigned size, unsigned count, fi_handle handle)
 {
-	std::istream & stream = *reinterpret_cast<std::istream *>(handle);
-	char * buf = static_cast<char *>(buffer);
-	unsigned result = 0;
-	while( result < count ) {
-		stream.read(buf,size);
-		if( stream.gcount() < std::streamsize(size) ) break;
-		buf += size;
-		++result;
+	auto & stream = *reinterpret_cast<std::istream *>(handle);
+	auto buf = static_cast<char *>(buffer);
+	std::streamsize bytesRead = 0;
+
+	// try to read as much as possible when size == 1 , which is a very common case
+	if( size == 1 ) {
+		while( stream && bytesRead < count ) {
+			stream.read(buf,count - bytesRead);
+			auto tot = stream.gcount();
+			if( tot == 0 ) break;
+			bytesRead += tot;
+			buf += tot;
+		}
+		return bytesRead;
 	}
+
+	unsigned result = 0;
+	auto chunk = std::streamsize(size);
+	while( stream ) {
+		stream.read(buf,chunk);
+		auto tot = stream.gcount();
+		if( tot == 0 ) break;
+		bytesRead += tot;
+		buf += tot;
+		while( bytesRead >= chunk ) {
+			++result;
+			if( result >= count ) {
+				return result;
+			}
+			bytesRead -= chunk;
+		}
+	}
+	if( bytesRead > 0 ) ++result;
 	return result;
 }
 
+// TODO implement special case when size == 1
 unsigned DLL_CALLCONV WriteProc(void * buffer, unsigned size, unsigned count, fi_handle handle)
 {
 	std::ostream & stream = *reinterpret_cast<std::ostream *>(handle);
@@ -416,6 +452,10 @@ void Image::load(std::istream & stream, Type type)
 	this->type = fif;
 }
 
+Image::operator bool() const {
+	return bool(image);
+}
+
 ImageInitializer::ImageInitializer() {
 	class ImageInitializerHelper {
 	public:
@@ -427,6 +467,17 @@ ImageInitializer::ImageInitializer() {
 		}
 	};
 	static ImageInitializerHelper init;
+}
+
+Type TypeFromExtension(char const * filename) {
+	auto pt = std::strrchr(filename,'.');
+	if( ! pt ) throw std::runtime_error("filename has no extension");
+	return TypeFromExtensionImpl(std::string(pt));
+}
+
+Type TypeFromExtension(std::string const & filename) {
+	auto p = filename.rfind('.');
+	return TypeFromExtensionImpl(filename.substr(p));
 }
 
 }
