@@ -116,6 +116,33 @@ inline std::ostream & operator<<(std::ostream & os, Color const & color) {
 	return os << '(' << int(color.r) << ',' << int(color.g) << ',' << int(color.b) << ',' << int(color.a) << ')';
 }
 
+inline std::istream & operator>>(std::istream & is, Color & color) {
+	auto readCharAsInt = [&is](Color::component & cp) {
+		int c;
+		is >> c;
+		cp = c;
+	};
+	auto skipOrFail = [&is](char c) {
+		if( is.peek() != c ) {
+			is.setstate(std::ios_base::failbit);
+			return false;
+		}
+		is.get();
+		return true;
+	};
+	// TODO only ignore control chars until reaching '('
+	is.ignore(std::numeric_limits<std::streamsize>::max(),'(');
+	readCharAsInt(color.r);
+	if( ! skipOrFail(',') ) return is;
+	readCharAsInt(color.g);
+	if( ! skipOrFail(',') ) return is;
+	readCharAsInt(color.b);
+	if( ! skipOrFail(',') ) return is;
+	readCharAsInt(color.a);
+	skipOrFail(')');
+	return is;
+}
+
 }
 
 #endif
